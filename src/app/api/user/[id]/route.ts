@@ -30,7 +30,13 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const payload = token ? verifyToken(token) : null;
 
   // Only allow profile owner or admin to update
-  if (!payload || (payload.userId !== params.id && payload.role !== "admin")) {
+  if (
+    !payload ||
+    typeof payload !== "object" ||
+    !("userId" in payload) ||
+    !("role" in payload) ||
+    ((payload as any).userId !== params.id && (payload as any).role !== "admin")
+  ) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
