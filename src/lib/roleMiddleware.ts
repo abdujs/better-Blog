@@ -8,7 +8,12 @@ export function requireRole(allowedRoles: string[]) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
         const payload = verifyToken(token);
-        if (!payload || !allowedRoles.includes(payload.role)) {
+        if (
+            !payload ||
+            typeof payload !== "object" ||
+            !("role" in payload) ||
+            !allowedRoles.includes((payload as any).role)
+        ) {
             return NextResponse.json({ error: "Forbidden" }, { status: 403 });
         }
         return NextResponse.next();

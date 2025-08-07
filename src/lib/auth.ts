@@ -1,24 +1,13 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 
-interface TokenPayload extends JwtPayload {
-  userId: string;
-  role: "admin" | "author" | "reader";
-}
-
-export function verifyToken(token: string): TokenPayload | null {
+export function verifyToken(token: string) {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
-    if (
-      typeof decoded === "object" &&
-      "userId" in decoded &&
-      typeof decoded.userId === "string" &&
-      "role" in decoded &&
-      typeof decoded.role === "string"
-    ) {
-      return { userId: decoded.userId, role: decoded.role as "admin" | "author" | "reader" };
-    }
-    return null;
+    return jwt.verify(token, process.env.JWT_SECRET!);
   } catch {
     return null;
   }
+}
+
+export function signToken(payload: object): string {
+  return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: "1d" });
 }
